@@ -70,26 +70,34 @@ function App() {
     }
 
     useEffect(() => {
-        // Vérifie si les notifications fonctionnent sur l'appareil
-        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-            setError("Les notifications web ne sont pas supportées sur iOS via Safari.");
-        } 
-        else {
-            if (Notification.permission === "granted") {
+        // Vérifie si le navigateur est compatible avec les notifications
+        if ("Notification" in window) {
+            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                setError("Les notifications web ne sont pas supportées sur iOS via Safari. Ajoutez cette application à votre écran d'accueil pour une meilleure expérience.");
+            } 
+            else if (Notification.permission === "granted") {
                 setPermissionGranted(true);
                 setSuccess("Notifications activées avec succès !");
             } 
             else if (Notification.permission === "default") {
                 requestNotificationPermission();
+            } 
+            else {
+                setError("Les notifications sont désactivées dans votre navigateur.");
             }
+        } 
+        else {
+            setError("Votre navigateur ne supporte pas les notifications.");
         }
-
+    
+        // Planifie les notifications si elles sont activées
         if (permissionGranted && !notificationsPlanned) {
             scheduleNotification(9, 0, "messageIndex9");
-            scheduleNotification(14, 20, "messageIndex14");
+            scheduleNotification(15, 42, "messageIndex14");
             setNotificationsPlanned(true);
         }
     }, [notificationsPlanned, permissionGranted]);
+    
     
 
     return (
@@ -103,6 +111,13 @@ function App() {
                 {!permissionGranted && (
                     <p>Veuillez activer les notifications pour recevoir des rappels.</p>
                 )}
+
+                {navigator.userAgent.match(/iPhone|iPad|iPod/i) && (
+                    <p style={{ color: "blue", textAlign: "center" }}>
+                        Pour une meilleure expérience, ajoutez cette application à votre écran d'accueil via le menu de partage de Safari.
+                    </p>
+                )}
+
 
                 {error && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{error}</p>}
                 {success && <p style={{ color: "green", margin: "20px", textAlign: "center" }}>{success}</p>}

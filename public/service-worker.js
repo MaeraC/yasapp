@@ -1,0 +1,15 @@
+// Permet à la PWA de fonctionner même hors ligne 
+
+self.addEventListener('install', (event) => {
+    console.log('Service Worker installé.');
+    // Mise en cache des ressources si nécessaire
+});
+
+self.addEventListener('activate', (event) => {
+    console.log('Service Worker activé.');
+});
+
+self.addEventListener('fetch', (event) => {
+    console.log('Requête interceptée :', event.request.url);
+    // Vous pouvez ici ajouter une logique pour gérer le cache
+});
