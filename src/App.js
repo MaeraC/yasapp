@@ -5,20 +5,26 @@ import messages                                             from "./datas.json"
 function App() {
     const [message, setMessage]                             = useState("")
     const [notificationsPlanned, setNotificationsPlanned]   = useState(false)
+    const [permissionGranted, setPermissionGranted]         = useState(false)
 
     // Permission des notifications
     const requestNotificationPermission = () => {
         if ("Notification" in window) {
-            Notification.requestPermission().then((permission) => {
-                if (permission === "granted") {
-                    console.log("Permission accordée pour les notifications.")
-                } 
-                else {
-                    console.log("Permission refusée.")
-                }
-            })
-        }
-        else {
+            if (Notification.permission === "granted") {
+                setPermissionGranted(true)
+            }
+            else if (Notification.permission === "default") {
+                Notification.requestPermission().then((permission) => {
+
+                    if (permission === "granted") {
+                        setPermissionGranted(true)
+                    } 
+                    else {
+                        console.log("Permission refusée.")
+                    }
+                })
+            }
+        } else {
             console.error("Notifications non supportées dans ce navigateur.")
         }
     }
@@ -47,7 +53,7 @@ function App() {
             // Envoie la notification
             new Notification("Rappel quotidien", {
               body: newMessage,
-              icon: "https://via.placeholder.com/100" // URL d'une icône pour la notification
+              icon: "./logo.png" // URL d'une icône pour la notification
             })
       
             const nextIndex = (currentIndex + 1) % messages.length
@@ -56,20 +62,28 @@ function App() {
     }
 
     useEffect(() => {
-        if (notificationsPlanned) return 
 
-        requestNotificationPermission()
-        // Planifie la notification de 9h
-        scheduleNotification(9, 0, "messageIndex9")
-        // Planifie la notification de 14h
-        scheduleNotification(14, 32, "messageIndex14")
+        if (Notification.permission === "granted") {
+            setPermissionGranted(true)
+        } 
+        else if (Notification.permission === "default") {
+            requestNotificationPermission()
+        }
 
-        setNotificationsPlanned(true)
-    }, [notificationsPlanned])
+        if (permissionGranted && !notificationsPlanned) {
+            scheduleNotification(9, 0, "messageIndex9")
+            scheduleNotification(14, 50, "messageIndex14")
+            setNotificationsPlanned(true)
+        }
+    }, [notificationsPlanned, permissionGranted])
 
     return (
         <div>
             <p>Un message s'affichera chaque jour à 9h.</p>
+
+            {!permissionGranted && (
+                <p>Veuillez activer les notifications pour recevoir des rappels.</p>
+            )}
 
             {message && (
                 <div style={{ marginTop: "20px", fontSize: "18px" }}>
