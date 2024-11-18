@@ -99,10 +99,9 @@ function App() {
             scheduleNotification(15, 58, "messageIndex14");
             setNotificationsPlanned(true);
         }
-    }, [notificationsPlanned, permissionGranted]);
+    }, [notificationsPlanned, permissionGranted])
     
     
-
     return (
         <div>
             <div style={{background: "#CE184B", padding: "20px"}}>

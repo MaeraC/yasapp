@@ -17,13 +17,13 @@ root.render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-      navigator.serviceWorker
-          .register('/service-worker.js') // Le fichier doit être placé dans le dossier public
-          .then((registration) => {
-              console.log('Service Worker enregistré avec succès :', registration);
-          })
-          .catch((error) => {
-              console.error('Erreur lors de l\'enregistrement du Service Worker :', error);
-          });
-  });
+    navigator.serviceWorker
+        .register('/service-worker.js') // Le fichier doit être placé dans le dossier public
+        .then((registration) => {
+          console.log('Service Worker enregistré avec succès :', registration);
+        })
+        .catch((error) => {
+          console.error('Erreur lors de l\'enregistrement du Service Worker :', error);
+        })
+  })
 }

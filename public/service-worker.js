@@ -1,4 +1,4 @@
-// Permet à la PWA de fonctionner même hors ligne 
+// Permet à la PWA de fonctionner même hors ligne et d'activer les notifications 
 
 self.addEventListener('install', (event) => {
     console.log('Service Worker installé.');
