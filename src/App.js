@@ -6,6 +6,7 @@ function App() {
     const [message, setMessage]                             = useState("")
     const [notificationsPlanned, setNotificationsPlanned]   = useState(false)
     const [permissionGranted, setPermissionGranted]         = useState(false)
+    const [error, setError]                                 = useState("")
 
     // Permission des notifications
     const requestNotificationPermission = () => {
@@ -72,25 +73,45 @@ function App() {
 
         if (permissionGranted && !notificationsPlanned) {
             scheduleNotification(9, 0, "messageIndex9")
-            scheduleNotification(14, 50, "messageIndex14")
+            scheduleNotification(15, 8, "messageIndex14")
             setNotificationsPlanned(true)
         }
     }, [notificationsPlanned, permissionGranted])
 
+    useEffect(() => {
+        if (typeof Notification !== "undefined" && Notification.permission === "default") {
+            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                alert("Les notifications web ne sont pas supportées sur iOS via Safari.");
+                setError("Les notifications web ne sont pas supportées sur iOS via Safari.")
+            } else {
+                requestNotificationPermission();
+            }
+        }
+    }, []);
+    
+
     return (
         <div>
-            <p>Un message s'affichera chaque jour à 9h.</p>
+            <div style={{background: "#CE184B", padding: "20px"}}>
+                <p style={{color: "white", textAlign: "center"}}>Hello Gorgeous !</p>
+            </div>
+            <div style={{padding: "20px"}}>
+                <p>Un message s'affichera chaque jour à 9h.</p>
 
-            {!permissionGranted && (
-                <p>Veuillez activer les notifications pour recevoir des rappels.</p>
-            )}
+                {!permissionGranted && (
+                    <p>Veuillez activer les notifications pour recevoir des rappels.</p>
+                )}
 
-            {message && (
-                <div style={{ marginTop: "20px", fontSize: "18px" }}>
-                    <strong>Message du jour :</strong>
-                    <p>{message}</p>
-                </div>
-            )}
+                {error && <p style={{color: "red", margin: "20px", textAlign: "center"}}>{error}</p>}
+
+                {message && (
+                    <div style={{ marginTop: "20px", fontSize: "18px" }}>
+                        <strong>Message du jour :</strong>
+                        <p>{message}</p>
+                    </div>
+                )}
+            </div>
+            
         </div>
     )
 }
