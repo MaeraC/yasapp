@@ -99,6 +99,8 @@ function App() {
             if (permissionGranted && !notificationsPlanned) {
                 scheduleNotification(9, 0, "messageIndex9")
                 scheduleNotification(17, 45, "messageIndex14")
+                scheduleNotification(17, 49, "messageIndex17")
+                scheduleNotification(17, 50, "messageIndex9")
                 setNotificationsPlanned(true)
             }
         } 
