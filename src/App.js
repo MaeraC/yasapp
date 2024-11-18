@@ -10,7 +10,6 @@ function App() {
     const [errorRefused, setErrorRefused]                   = useState("")
     const [errorBlocked, setErrorBlocked]                   = useState("")
     const [errorNoSupported, setErrorNoSupported]           = useState("")
-    const [errorDesactivated, setErrorDesactivated]         = useState("")
     const [success, setSuccess]                             = useState("")
 
     // Permission des notifications
@@ -73,8 +72,17 @@ function App() {
     }
 
     useEffect(() => {
+        const isStandalone =
+            window.matchMedia('(display-mode: standalone)').matches ||
+            window.navigator.standalone
+
         if ("Notification" in window) {
-            if (!permissionGranted) {
+            if (!isStandalone && navigator.userAgent.match(/iPhone|iPad|iPod/i)) {       
+                setErrorNoSupported(
+                    "Pour activer les notifications, ajoutez cette application à votre écran d'accueil."
+                )
+            } 
+            else if (!permissionGranted) {
                 if (Notification.permission === "default") {
                     setError("Veuillez activer les notifications pour recevoir vos rappels.");
                 } 
@@ -89,23 +97,15 @@ function App() {
     
             // Planifie les notifications si elles ne l'ont pas encore été
             if (permissionGranted && !notificationsPlanned) {
-                scheduleNotification(9, 0, "messageIndex9");
-                scheduleNotification(14, 0, "messageIndex14");
-                setNotificationsPlanned(true);
+                scheduleNotification(9, 0, "messageIndex9")
+                scheduleNotification(14, 0, "messageIndex14")
+                setNotificationsPlanned(true)
             }
-        } else {
-            setError("Votre navigateur ne supporte pas les notifications.");
+        } 
+        else {
+            setError("Votre navigateur ne supporte pas les notifications.")
         }
-    }, [notificationsPlanned, permissionGranted]);
-    
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-    useEffect(() => {
-        if (!isStandalone && navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-            setErrorNoSupported("Pour activer les notifications, ajoutez cette application à votre écran d'accueil.");
-        }
-    }, []);
-
+    }, [notificationsPlanned, permissionGranted])
     
     return (
         <div>
@@ -141,7 +141,6 @@ function App() {
                     </p>
                 )}
 
-                {errorDesactivated && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorDesactivated}</p>}
                 {errorNoSupported && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorNoSupported}</p>}
                 {errorBlocked && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorBlocked}</p>}
                 {errorRefused && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorRefused}</p>}
