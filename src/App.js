@@ -98,7 +98,7 @@ function App() {
             // Planifie les notifications si elles ne l'ont pas encore été
             if (permissionGranted && !notificationsPlanned) {
                 scheduleNotification(9, 0, "messageIndex9")
-                scheduleNotification(14, 0, "messageIndex14")
+                scheduleNotification(17, 45, "messageIndex14")
                 setNotificationsPlanned(true)
             }
         } 
