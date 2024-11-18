@@ -73,34 +73,39 @@ function App() {
     }
 
     useEffect(() => {
-        // Vérifie si le navigateur est compatible avec les notifications
         if ("Notification" in window) {
-            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                setErrorNoSupported("Les notifications web ne sont pas supportées sur iOS via Safari. Ajoutez cette application à votre écran d'accueil pour une meilleure expérience.");
-            } 
-            else if (Notification.permission === "granted") {
-                setPermissionGranted(true);
-                setSuccess("Notifications activées avec succès !");
-            } 
-            else if (Notification.permission === "default") {
-                requestNotificationPermission();
-            } 
-            else {
-                setErrorDesactivated("Les notifications sont désactivées dans votre navigateur.");
+            if (!permissionGranted) {
+                if (Notification.permission === "default") {
+                    setError("Veuillez activer les notifications pour recevoir vos rappels.");
+                } 
+                else if (Notification.permission === "denied") {
+                    setErrorRefused("Vous avez refusé les notifications. Activez-les dans les paramètres de votre navigateur.");
+                } 
+                else if (Notification.permission === "granted") {
+                    setPermissionGranted(true);
+                    setSuccess("Notifications activées avec succès !");
+                }
             }
-        } 
-        else {
+    
+            // Planifie les notifications si elles ne l'ont pas encore été
+            if (permissionGranted && !notificationsPlanned) {
+                scheduleNotification(9, 0, "messageIndex9");
+                scheduleNotification(14, 0, "messageIndex14");
+                setNotificationsPlanned(true);
+            }
+        } else {
             setError("Votre navigateur ne supporte pas les notifications.");
         }
+    }, [notificationsPlanned, permissionGranted]);
     
-        // Planifie les notifications si elles sont activées
-        if (permissionGranted && !notificationsPlanned) {
-            scheduleNotification(9, 0, "messageIndex9");
-            scheduleNotification(15, 58, "messageIndex14");
-            setNotificationsPlanned(true);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    useEffect(() => {
+        if (!isStandalone && navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+            setErrorNoSupported("Pour activer les notifications, ajoutez cette application à votre écran d'accueil.");
         }
-    }, [notificationsPlanned, permissionGranted])
-    
+    }, []);
+
     
     return (
         <div>
@@ -110,9 +115,25 @@ function App() {
             <div style={{padding: "20px"}}>
                 <p>Un message s'affichera chaque jour à 9h.</p>
 
-                {!permissionGranted && (
-                    <p>Veuillez activer les notifications pour recevoir des rappels.</p>
-                )}
+                <div>
+                    {!permissionGranted && (
+                        <button
+                            onClick={requestNotificationPermission}
+                            style={{
+                                padding: "10px 20px",
+                                backgroundColor: "#CE184B",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                margin: "20px 0",
+                            }}
+                        >
+                            Activer les notifications
+                        </button>
+                    )}
+                </div>
+
 
                 {navigator.userAgent.match(/iPhone|iPad|iPod/i) && (
                     <p style={{ color: "blue", textAlign: "center" }}>
