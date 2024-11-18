@@ -7,23 +7,30 @@ function App() {
     const [notificationsPlanned, setNotificationsPlanned]   = useState(false)
     const [permissionGranted, setPermissionGranted]         = useState(false)
     const [error, setError]                                 = useState("")
+    const [success, setSuccess]                             = useState("")
 
     // Permission des notifications
     const requestNotificationPermission = () => {
         if ("Notification" in window) {
             if (Notification.permission === "granted") {
                 setPermissionGranted(true)
+                setSuccess("Notifications activées avec succès !")
             }
             else if (Notification.permission === "default") {
                 Notification.requestPermission().then((permission) => {
 
                     if (permission === "granted") {
                         setPermissionGranted(true)
+                        setSuccess("Notifications activées avec succès !")
                     } 
                     else {
                         console.log("Permission refusée.")
+                        setError("Vous avez refusé les notifications.")
                     }
                 })
+            }
+            else {
+                setError("Les notifications ont été bloquées par votre navigateur.")
             }
         } else {
             console.error("Notifications non supportées dans ce navigateur.")
@@ -63,31 +70,26 @@ function App() {
     }
 
     useEffect(() => {
-
-        if (Notification.permission === "granted") {
-            setPermissionGranted(true)
+        // Vérifie si les notifications fonctionnent sur l'appareil
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+            setError("Les notifications web ne sont pas supportées sur iOS via Safari.");
         } 
-        else if (Notification.permission === "default") {
-            requestNotificationPermission()
-        }
-
-        if (permissionGranted && !notificationsPlanned) {
-            scheduleNotification(9, 0, "messageIndex9")
-            scheduleNotification(15, 8, "messageIndex14")
-            setNotificationsPlanned(true)
-        }
-    }, [notificationsPlanned, permissionGranted])
-
-    useEffect(() => {
-        if (typeof Notification !== "undefined" && Notification.permission === "default") {
-            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                alert("Les notifications web ne sont pas supportées sur iOS via Safari.");
-                setError("Les notifications web ne sont pas supportées sur iOS via Safari.")
-            } else {
+        else {
+            if (Notification.permission === "granted") {
+                setPermissionGranted(true);
+                setSuccess("Notifications activées avec succès !");
+            } 
+            else if (Notification.permission === "default") {
                 requestNotificationPermission();
             }
         }
-    }, []);
+
+        if (permissionGranted && !notificationsPlanned) {
+            scheduleNotification(9, 0, "messageIndex9");
+            scheduleNotification(14, 20, "messageIndex14");
+            setNotificationsPlanned(true);
+        }
+    }, [notificationsPlanned, permissionGranted]);
     
 
     return (
@@ -102,7 +104,8 @@ function App() {
                     <p>Veuillez activer les notifications pour recevoir des rappels.</p>
                 )}
 
-                {error && <p style={{color: "red", margin: "20px", textAlign: "center"}}>{error}</p>}
+                {error && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{error}</p>}
+                {success && <p style={{ color: "green", margin: "20px", textAlign: "center" }}>{success}</p>}
 
                 {message && (
                     <div style={{ marginTop: "20px", fontSize: "18px" }}>
