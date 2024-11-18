@@ -62,7 +62,7 @@ function App() {
         // Planifie la notification de 9h
         scheduleNotification(9, 0, "messageIndex9")
         // Planifie la notification de 14h
-        scheduleNotification(14, 15, "messageIndex14")
+        scheduleNotification(14, 32, "messageIndex14")
 
         setNotificationsPlanned(true)
     }, [notificationsPlanned])
