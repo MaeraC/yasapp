@@ -7,6 +7,10 @@ function App() {
     const [notificationsPlanned, setNotificationsPlanned]   = useState(false)
     const [permissionGranted, setPermissionGranted]         = useState(false)
     const [error, setError]                                 = useState("")
+    const [errorRefused, setErrorRefused]                   = useState("")
+    const [errorBlocked, setErrorBlocked]                   = useState("")
+    const [errorNoSupported, setErrorNoSupported]           = useState("")
+    const [errorDesactivated, setErrorDesactivated]         = useState("")
     const [success, setSuccess]                             = useState("")
 
     // Permission des notifications
@@ -24,13 +28,12 @@ function App() {
                         setSuccess("Notifications activées avec succès !")
                     } 
                     else {
-                        console.log("Permission refusée.")
-                        setError("Vous avez refusé les notifications.")
+                        setErrorRefused("Vous avez refusé les notifications.")
                     }
                 })
             }
             else {
-                setError("Les notifications ont été bloquées par votre navigateur.")
+                setErrorBlocked("Les notifications ont été bloquées par votre navigateur.")
             }
         } else {
             console.error("Notifications non supportées dans ce navigateur.")
@@ -73,7 +76,7 @@ function App() {
         // Vérifie si le navigateur est compatible avec les notifications
         if ("Notification" in window) {
             if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                setError("Les notifications web ne sont pas supportées sur iOS via Safari. Ajoutez cette application à votre écran d'accueil pour une meilleure expérience.");
+                setErrorNoSupported("Les notifications web ne sont pas supportées sur iOS via Safari. Ajoutez cette application à votre écran d'accueil pour une meilleure expérience.");
             } 
             else if (Notification.permission === "granted") {
                 setPermissionGranted(true);
@@ -83,7 +86,7 @@ function App() {
                 requestNotificationPermission();
             } 
             else {
-                setError("Les notifications sont désactivées dans votre navigateur.");
+                setErrorDesactivated("Les notifications sont désactivées dans votre navigateur.");
             }
         } 
         else {
@@ -93,7 +96,7 @@ function App() {
         // Planifie les notifications si elles sont activées
         if (permissionGranted && !notificationsPlanned) {
             scheduleNotification(9, 0, "messageIndex9");
-            scheduleNotification(15, 42, "messageIndex14");
+            scheduleNotification(15, 58, "messageIndex14");
             setNotificationsPlanned(true);
         }
     }, [notificationsPlanned, permissionGranted]);
@@ -118,7 +121,10 @@ function App() {
                     </p>
                 )}
 
-
+                {errorDesactivated && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorDesactivated}</p>}
+                {errorNoSupported && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorNoSupported}</p>}
+                {errorBlocked && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorBlocked}</p>}
+                {errorRefused && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{errorRefused}</p>}
                 {error && <p style={{ color: "red", margin: "20px", textAlign: "center" }}>{error}</p>}
                 {success && <p style={{ color: "green", margin: "20px", textAlign: "center" }}>{success}</p>}
 
