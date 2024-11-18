@@ -13,3 +13,11 @@ self.addEventListener('fetch', (event) => {
     console.log('Requête interceptée :', event.request.url);
     // Vous pouvez ici ajouter une logique pour gérer le cache
 });
+
+self.addEventListener('push', (event) => {
+    const data = event.data.json();
+    self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: './logo.png',
+    });
+});
