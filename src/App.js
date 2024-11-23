@@ -7,12 +7,12 @@ import { getMessaging, getToken, onMessage } from "firebase/messaging";
 // Fichier src/App.js 
 
 const firebaseConfig = {
-  apiKey: "TON_API_KEY",
-  authDomain: "TON_PROJET.firebaseapp.com",
-  projectId: "TON_PROJET",
-  storageBucket: "TON_PROJET.appspot.com",
-  messagingSenderId: "TON_MESSAGING_SENDER_ID",
-  appId: "TON_APP_ID",
+    apiKey: "AIzaSyAiF_wMsg7qelPEqXIBlI6C4Pz6ZrxnR4A",
+    authDomain: "yasapp-1e3cf.firebaseapp.com",
+    projectId: "yasapp-1e3cf",
+    storageBucket: "yasapp-1e3cf.firebasestorage.app",
+    messagingSenderId: "625578653182",
+    appId: "1:625578653182:web:d7930acbf24b4f9b433caf"
 }
 
 const app = initializeApp(firebaseConfig)
@@ -85,7 +85,7 @@ function App() {
         const messageEvening = messages[(savedIndex + 1) % messages.length]
     
         scheduleNotification(9, 0, messageMorning, savedIndex)
-        scheduleNotification(11, 30, messageEvening, savedIndex + 1)
+        scheduleNotification(12, 0, messageEvening, savedIndex + 1)
     }, [])
 
     useEffect(() => {
