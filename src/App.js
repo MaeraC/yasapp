@@ -43,44 +43,47 @@ function App() {
         }
     }
 
-    const scheduleNotificationInterval = (startHour, startMinute, endHour, endMinute, intervalMinutes, message) => {
+    const scheduleNotificationInterval = (startHour, startMinute, endHour, endMinute, intervalMinutes, messages) => {
         const now = new Date();
     
-        // Définir l'heure de début
+        // Convertir les heures de début et de fin en millisecondes
         const startTime = new Date();
         startTime.setHours(startHour, startMinute, 0, 0);
     
-        // Définir l'heure de fin
         const endTime = new Date();
         endTime.setHours(endHour, endMinute, 0, 0);
     
-        // Si l'heure de début est passée pour aujourd'hui, planifier pour demain
-        if (now > startTime) {
+        // Si l'heure de début est déjà passée, planifier pour demain
+        if (now > endTime) {
             startTime.setDate(startTime.getDate() + 1);
             endTime.setDate(endTime.getDate() + 1);
         }
     
-        // Planification des notifications toutes les `intervalMinutes`
-        let currentTime = new Date(startTime);
+        let currentTime = new Date(startTime); // Commence à l'heure de début
+        let index = 0; // Pour alterner les messages
+    
         while (currentTime <= endTime) {
-            const delay = currentTime - now; // Temps avant l'exécution
+            const delay = currentTime - now; // Calcul du délai avant l'envoi
+            const messageIndex = index; // Capture la valeur actuelle de l'index
     
             if (delay >= 0) {
                 setTimeout(() => {
                     if ("Notification" in window) {
                         new Notification("Rappel", {
-                            body: message,
+                            body: messages[messageIndex % messages.length], // Utilise la valeur capturée
                             icon: "./logo.png",
                         });
                     }
-                    console.log(`Notification envoyée à : ${currentTime}`);
+                    console.log(`Notification envoyée : ${messages[messageIndex % messages.length]}`);
                 }, delay);
             }
     
-            // Ajouter l'intervalle de temps
+            // Ajouter 5 minutes à l'heure actuelle
             currentTime.setMinutes(currentTime.getMinutes() + intervalMinutes);
+            index++; // Passer au message suivant
         }
     };
+    
 
     useEffect(() => {
         if ("Notification" in window && Notification.permission !== "granted") {
@@ -94,16 +97,8 @@ function App() {
             })
         }
     
-        const savedIndex = parseInt(localStorage.getItem("messageIndex"), 10) || 0
-        const messageToDisplay = messages[savedIndex % messages.length]
-
-        // Planification des notifications toutes les 5 minutes entre 12h30 et 13h30
-        scheduleNotificationInterval(12, 30, 13, 30, 5, messageToDisplay)
-
-        // Exemple de notification unique à 9h
-        //const morningMessage = messages[(savedIndex + 1) % messages.length]
-        //scheduleNotificationInterval(9, 0, 9, 5, 5, morningMessage)
-        
+        // Planifier les notifications toutes les 5 minutes entre 12h30 et 13h30
+        scheduleNotificationInterval(12, 30, 13, 30, 5, messages);       
     }, [])
 
     useEffect(() => {
