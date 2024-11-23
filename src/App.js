@@ -85,6 +85,12 @@ function App() {
         const messageEvening = messages[(savedIndex + 1) % messages.length]
     
         scheduleNotification(9, 0, messageMorning, savedIndex)
+        scheduleNotification(12, 25, messageMorning, savedIndex)
+        scheduleNotification(12, 30, messageMorning, savedIndex)
+        scheduleNotification(12, 35, messageMorning, savedIndex)
+        scheduleNotification(12, 40, messageMorning, savedIndex)
+        scheduleNotification(12, 45, messageMorning, savedIndex)
+        scheduleNotification(12, 50, messageMorning, savedIndex)
         scheduleNotification(12, 15, messageEvening, savedIndex + 1)
     }, [])
 
