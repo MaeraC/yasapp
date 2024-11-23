@@ -43,30 +43,44 @@ function App() {
         }
     }
 
-    const scheduleNotification = (hour, minute, message, messageIndex) => {
-        const now = new Date()
-        const targetTime = new Date()
-        targetTime.setHours(hour, minute, 0, 0)
+    const scheduleNotificationInterval = (startHour, startMinute, endHour, endMinute, intervalMinutes, message) => {
+        const now = new Date();
     
-        if (now > targetTime) {
-          targetTime.setDate(targetTime.getDate() + 1)
+        // Définir l'heure de début
+        const startTime = new Date();
+        startTime.setHours(startHour, startMinute, 0, 0);
+    
+        // Définir l'heure de fin
+        const endTime = new Date();
+        endTime.setHours(endHour, endMinute, 0, 0);
+    
+        // Si l'heure de début est passée pour aujourd'hui, planifier pour demain
+        if (now > startTime) {
+            startTime.setDate(startTime.getDate() + 1);
+            endTime.setDate(endTime.getDate() + 1);
         }
     
-        const delay = targetTime - now
+        // Planification des notifications toutes les `intervalMinutes`
+        let currentTime = new Date(startTime);
+        while (currentTime <= endTime) {
+            const delay = currentTime - now; // Temps avant l'exécution
     
-        setTimeout(() => {
-            if ("Notification" in window) {
-                new Notification("Rappel quotidien", {
-                    body: message,
-                    icon: "./logo.png",
-                })
+            if (delay >= 0) {
+                setTimeout(() => {
+                    if ("Notification" in window) {
+                        new Notification("Rappel", {
+                            body: message,
+                            icon: "./logo.png",
+                        });
+                    }
+                    console.log(`Notification envoyée à : ${currentTime}`);
+                }, delay);
             }
-
-            setMessage(message)
-            const nextIndex = (messageIndex + 1) % messages.length
-            localStorage.setItem("messageIndex", nextIndex)
-        }, delay)
-    }
+    
+            // Ajouter l'intervalle de temps
+            currentTime.setMinutes(currentTime.getMinutes() + intervalMinutes);
+        }
+    };
 
     useEffect(() => {
         if ("Notification" in window && Notification.permission !== "granted") {
@@ -81,17 +95,15 @@ function App() {
         }
     
         const savedIndex = parseInt(localStorage.getItem("messageIndex"), 10) || 0
-        const messageMorning = messages[savedIndex % messages.length]
-        const messageEvening = messages[(savedIndex + 1) % messages.length]
-    
-        scheduleNotification(9, 0, messageMorning, savedIndex)
-        scheduleNotification(12, 25, messageMorning, savedIndex)
-        scheduleNotification(12, 30, messageMorning, savedIndex)
-        scheduleNotification(12, 35, messageMorning, savedIndex)
-        scheduleNotification(12, 40, messageMorning, savedIndex)
-        scheduleNotification(12, 45, messageMorning, savedIndex)
-        scheduleNotification(12, 50, messageMorning, savedIndex)
-        scheduleNotification(12, 15, messageEvening, savedIndex + 1)
+        const messageToDisplay = messages[savedIndex % messages.length]
+
+        // Planification des notifications toutes les 5 minutes entre 12h30 et 13h30
+        scheduleNotificationInterval(12, 30, 13, 30, 5, messageToDisplay)
+
+        // Exemple de notification unique à 9h
+        //const morningMessage = messages[(savedIndex + 1) % messages.length]
+        //scheduleNotificationInterval(9, 0, 9, 5, 5, morningMessage)
+        
     }, [])
 
     useEffect(() => {
@@ -107,7 +119,7 @@ function App() {
                 <p style={{color: "white", textAlign: "center"}}>Hello Gorgeous !</p>
             </div>
             <div style={{padding: "20px"}}>
-                <p>Un message s'affichera chaque jour à 9h.</p>
+                <p>Un message s'affichera toutes les 5 minutes entre 12h30 et 13h30.</p>
 
                 <button onClick={requestNotificationPermission} style={{ padding: "10px 20px", backgroundColor: "#CE184B", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", margin: "20px 0" }}>
                     Activer les notifications
