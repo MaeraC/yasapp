@@ -9,8 +9,10 @@ self.addEventListener('unhandledrejection', (event) => {
     console.error('Promesse non gérée dans le Service Worker :', event.reason)
 })
 
-importScripts('firebase/firebase-app.js')
-importScripts('firebase/firebase-messaging.js')
+importScripts('firebase/firebase-app-compat.js')
+importScripts('firebase/firebase-messaging-compat.js')
+
+console.log('Service Worker chargé correctement');
 
 const firebaseConfig = {
     apiKey: "AIzaSyAiF_wMsg7qelPEqXIBlI6C4Pz6ZrxnR4A",
@@ -35,3 +37,7 @@ messaging.onBackgroundMessage((payload) => {
 
     self.registration.showNotification(notificationTitle, notificationOptions)
 })
+
+
+
+

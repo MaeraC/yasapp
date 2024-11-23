@@ -85,7 +85,7 @@ function App() {
         const messageEvening = messages[(savedIndex + 1) % messages.length]
     
         scheduleNotification(9, 0, messageMorning, savedIndex)
-        scheduleNotification(18, 35, messageEvening, savedIndex + 1)
+        scheduleNotification(11, 30, messageEvening, savedIndex + 1)
     }, [])
 
     useEffect(() => {
